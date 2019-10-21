@@ -1,15 +1,16 @@
 package me.cbitler.raidbot.edit;
 
-import java.util.List;
-
-import me.cbitler.raidbot.database.sqlite.SqliteDAL;
+import me.cbitler.raidbot.database.UnitOfWork;
 import me.cbitler.raidbot.models.Raid;
-import me.cbitler.raidbot.raids.RaidManager;
 import me.cbitler.raidbot.models.RaidRole;
+import me.cbitler.raidbot.raids.RaidManager;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
+
+import java.util.List;
 
 /**
  * Change the amount for a role of the event
+ *
  * @author Franziska Mueller
  */
 public class ChangeFlexOnlyStep implements EditStep {
@@ -24,6 +25,7 @@ public class ChangeFlexOnlyStep implements EditStep {
 
     /**
      * Handle changing the amount for a role of the event
+     *
      * @param e The direct message event
      * @return True if a amount is changed, false otherwise
      */
@@ -50,14 +52,13 @@ public class ChangeFlexOnlyStep implements EditStep {
                 e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Set the `flex only` status on role *" + roles.get(roleID).getName() + "* by entering `1` to enable and `0` to disable it:").queue());
             } else
                 e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Invalid input. Try again.").queue());
-        }
-        else // message contains new status
+        } else // message contains new status
         {
             if (inputNumber == 0 || inputNumber == 1) {
                 finished = true; // we are done after we try to add
                 boolean newStatus = false;
-                if(inputNumber==1) newStatus = true;
-                int out = SqliteDAL.getInstance().getRaidDao().changeFlexOnlyRole(raid, roleID, newStatus);
+                if (inputNumber == 1) newStatus = true;
+                int out = UnitOfWork.getDb().getRaidDao().changeFlexOnlyRole(raid, roleID, newStatus);
                 if (out == 0) { // success
                     final String statusChange = newStatus ? "enabled" : "disabled";
                     e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Successfully *" + statusChange + "* `flex only` status.").queue());
@@ -81,7 +82,7 @@ public class ChangeFlexOnlyStep implements EditStep {
         List<RaidRole> roles = RaidManager.getRaid(messageID).getRoles();
         stepText = "For which role do you want to change the `flex only` flag? \n";
         for (int r = 0; r < roles.size(); r++)
-            stepText += "`" + (r+1) + "` " + roles.get(r).getName() + " \n";
+            stepText += "`" + (r + 1) + "` " + roles.get(r).getName() + " \n";
 
         return stepText;
     }
@@ -91,7 +92,7 @@ public class ChangeFlexOnlyStep implements EditStep {
      */
     public EditStep getNextStep() {
         RaidRole role = RaidManager.getRaid(messageID).getRoles().get(roleID);
-        if(role.isFlexOnly() && role.getAmount()==0) return new ChangeAmountStep(messageID);
+        if (role.isFlexOnly() && role.getAmount() == 0) return new ChangeAmountStep(messageID);
         return new EditIdleStep(messageID);
     }
 

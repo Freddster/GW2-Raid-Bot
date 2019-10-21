@@ -1,4 +1,6 @@
-package me.cbitler.raidbot.database.sqlite.dao;
+package me.cbitler.raidbot.database.sql.sqlite.dao;
+
+import me.cbitler.raidbot.database.sql.dao.BaseFunctionality;
 
 import java.sql.Connection;
 

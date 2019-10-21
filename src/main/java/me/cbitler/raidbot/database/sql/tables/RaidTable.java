@@ -1,4 +1,4 @@
-package me.cbitler.raidbot.database.sqlite.tables;
+package me.cbitler.raidbot.database.sql.tables;
 
 public class RaidTable {
 

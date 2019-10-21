@@ -1,8 +1,9 @@
-package me.cbitler.raidbot.database.sqlite.dao;
+package me.cbitler.raidbot.database.sql.dao;
 
 import me.cbitler.raidbot.database.QueryResult;
-import me.cbitler.raidbot.database.sqlite.tables.UserFlexRoleTable;
-import me.cbitler.raidbot.database.sqlite.tables.UserTable;
+import me.cbitler.raidbot.database.RaidDao;
+import me.cbitler.raidbot.database.sql.tables.UserFlexRoleTable;
+import me.cbitler.raidbot.database.sql.tables.UserTable;
 import me.cbitler.raidbot.models.*;
 
 import java.sql.Connection;
@@ -11,15 +12,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static me.cbitler.raidbot.database.sqlite.tables.RaidTable.*;
+import static me.cbitler.raidbot.database.sql.tables.RaidTable.*;
 import static me.cbitler.raidbot.raids.RaidManager.formatRolesForDatabase;
 
-public class RaidDao extends BaseFunctionality {
-    public static final int ROLE_ADDED = 0;
-    public static final int ROLE_EXIST = 1;
-    public static final int ROLE_ADD_DB_ERROR = 2;
+public class RaidDaoImpl extends BaseFunctionality implements RaidDao {
 
-    public RaidDao(Connection connection) {
+    public RaidDaoImpl(Connection connection) {
         this.connection = connection;
     }
 
@@ -44,17 +42,17 @@ public class RaidDao extends BaseFunctionality {
      * Change amount for a role of the event
      *
      * @param id        role
-     * @param newamount new amount for the role
+     * @param newAmount new amount for the role
      * @return 0 success, 1 number of users > new amount, 2 SQL error
      */
-    public int changeAmountRole(Raid raid, int id, int newamount) {
+    public int changeAmountRole(Raid raid, int id, int newAmount) {
         String roleName = raid.getRoles().get(id).getName();
         int numberUsers = getUserNumberInRole(raid.getUserToRole(), roleName);
-        if (newamount < numberUsers) {
+        if (newAmount < numberUsers) {
             return ROLE_EXIST;
         }
 
-        raid.getRoles().get(id).setAmount(newamount);
+        raid.getRoles().get(id).setAmount(newAmount);
 
         // rename in database
         return updateRaidRoles(raid);
@@ -137,28 +135,28 @@ public class RaidDao extends BaseFunctionality {
     /**
      * Rename a role of the event
      *
-     * @param id      role
-     * @param newname new name for the role
+     * @param roleId  role
+     * @param newName new name for the role
      * @return 0 success, 1 role exists, 2 SQL error
      */
-    public int renameRole(Raid raid, int id, String newname) {
+    public int renameRole(Raid raid, int roleId, String newName) {
         for (RaidRole role : raid.getRoles()) {
-            if (role.getName().equalsIgnoreCase(newname)) {
+            if (role.getName().equalsIgnoreCase(newName)) {
                 return ROLE_EXIST;
             }
         }
-        String oldName = raid.getRoles().get(id).getName();
-        raid.getRoles().get(id).setName(newname);
+        String oldName = raid.getRoles().get(roleId).getName();
+        raid.getRoles().get(roleId).setName(newName);
 
         // iterate over users' roles and rename
         for (Map.Entry<RaidUser, String> user : raid.getUserToRole().entrySet()) {
             if (user.getValue().equals(oldName))
-                user.setValue(newname);
+                user.setValue(newName);
         }
         for (Map.Entry<RaidUser, List<FlexRole>> flex : raid.getUsersToFlexRoles().entrySet()) {
             for (FlexRole frole : flex.getValue()) {
                 if (frole.getRole().equals(oldName))
-                    frole.setRole(newname);
+                    frole.setRole(newName);
             }
         }
 
@@ -168,9 +166,9 @@ public class RaidDao extends BaseFunctionality {
             update("UPDATE `" + TABLE_NAME + "` SET `" + ROLES + "`=? WHERE `" + RAID_ID + "`=?",
                     new String[]{rolesString, raid.getMessageId()});
             update("UPDATE `" + UserTable.TABLE_NAME + "` SET `" + UserTable.ROLE + "`=? WHERE `" + UserTable.ROLE + "`=? AND `" + UserTable.RAID_ID + "`=?",
-                    new String[]{newname, oldName, raid.getMessageId()});
+                    new String[]{newName, oldName, raid.getMessageId()});
             update("UPDATE `" + UserFlexRoleTable.TABLE_NAME + "` SET `" + UserFlexRoleTable.ROLE + "`=? WHERE `" + UserFlexRoleTable.ROLE + "`=? AND `" + UserFlexRoleTable.RAID_ID + "`=?",
-                    new String[]{newname, oldName, raid.getMessageId()});
+                    new String[]{newName, oldName, raid.getMessageId()});
 
             return ROLE_ADDED;
         } catch (SQLException e) {

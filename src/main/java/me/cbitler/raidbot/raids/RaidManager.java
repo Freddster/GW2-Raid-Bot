@@ -2,7 +2,7 @@ package me.cbitler.raidbot.raids;
 
 import me.cbitler.raidbot.RaidBot;
 import me.cbitler.raidbot.database.QueryResult;
-import me.cbitler.raidbot.database.sqlite.SqliteDAL;
+import me.cbitler.raidbot.database.UnitOfWork;
 import me.cbitler.raidbot.models.PendingRaid;
 import me.cbitler.raidbot.models.Raid;
 import me.cbitler.raidbot.models.RaidRole;
@@ -47,7 +47,7 @@ public class RaidManager {
             // We always go with the first channel if there is more than one
             try {
                 channels.get(0).sendMessage(message).queue(message1 -> {
-                    boolean inserted = SqliteDAL.getInstance().getRaidDao().insertToDatabase(raid, message1.getId(), message1.getGuild().getId(),
+                    boolean inserted = UnitOfWork.getDb().getRaidDao().insertToDatabase(raid, message1.getId(), message1.getGuild().getId(),
                             message1.getChannel().getId());
                     if (inserted) {
                         Raid newRaid = new Raid(message1.getId(), message1.getGuild().getId(),
@@ -77,6 +77,7 @@ public class RaidManager {
     }
 
     //TODO: FIGURE OUT WHAT THIS METHOD DOES, AND MOVE OR DELETE IT
+
     /**
      * Load raids This first queries all of the raids and loads the raid data and
      * adds the raids to the raid list Then, it queries the raid users and inserts
@@ -85,7 +86,7 @@ public class RaidManager {
      */
     public static void loadRaids() {
         try {
-            QueryResult results = SqliteDAL.getInstance().getRaidDao().getAllRaids();
+            QueryResult results = UnitOfWork.getDb().getRaidDao().getAllRaids();
             while (results.getResults().next()) {
                 //TODO: USE NAMES FROM TABLE
                 String name = results.getResults().getString("name");
@@ -126,7 +127,7 @@ public class RaidManager {
             results.getResults().close();
             results.getStmt().close();
 
-            QueryResult userResults = SqliteDAL.getInstance().getUsersDao().getAllUsers();
+            QueryResult userResults = UnitOfWork.getDb().getUsersDao().getAllUsers();
 
             while (userResults.getResults().next()) {
                 //TODO: FIX DUPLICATE STUFF
@@ -139,11 +140,11 @@ public class RaidManager {
 
                 Raid raid = RaidManager.getRaid(raidId);
                 if (raid != null) {
-                    SqliteDAL.getInstance().getUsersDao().addUser(raid, id, name, spec, role, false, false);
+                    UnitOfWork.getDb().getUsersDao().addUser(raid, id, name, spec, role, false, false);
                 }
             }
 
-            QueryResult userFlexRolesResults = SqliteDAL.getInstance().getUsersFlexRolesDao().getAllFlexUsers();
+            QueryResult userFlexRolesResults = UnitOfWork.getDb().getUsersFlexRolesDao().getAllFlexUsers();
 
             while (userFlexRolesResults.getResults().next()) {
                 String id = userFlexRolesResults.getResults().getString("userId");
@@ -154,7 +155,7 @@ public class RaidManager {
 
                 Raid raid = RaidManager.getRaid(raidId);
                 if (raid != null) {
-                    SqliteDAL.getInstance().getUsersFlexRolesDao().addUserFlexRole(raid, id, name, spec, role, false, false);
+                    UnitOfWork.getDb().getUsersFlexRolesDao().addUserFlexRole(raid, id, name, spec, role, false, false);
                 }
             }
 
@@ -195,9 +196,9 @@ public class RaidManager {
             }
 
             try {
-                SqliteDAL.getInstance().getRaidDao().deleteRaid(messageId);
-                SqliteDAL.getInstance().getUsersDao().deleteRaid(messageId);
-                SqliteDAL.getInstance().getUsersFlexRolesDao().deleteRaid(messageId);
+                UnitOfWork.getDb().getRaidDao().deleteRaid(messageId);
+                UnitOfWork.getDb().getUsersDao().deleteRaid(messageId);
+                UnitOfWork.getDb().getUsersFlexRolesDao().deleteRaid(messageId);
             } catch (Exception e) {
                 System.out.println("Error encountered deleting event.");
             }

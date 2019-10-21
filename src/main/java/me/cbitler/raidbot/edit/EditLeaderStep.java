@@ -1,6 +1,6 @@
 package me.cbitler.raidbot.edit;
 
-import me.cbitler.raidbot.database.sqlite.SqliteDAL;
+import me.cbitler.raidbot.database.UnitOfWork;
 import me.cbitler.raidbot.models.Raid;
 import me.cbitler.raidbot.raids.RaidManager;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
@@ -27,7 +27,7 @@ public class EditLeaderStep implements EditStep {
     public boolean handleDM(PrivateMessageReceivedEvent e) {
         Raid raid = RaidManager.getRaid(messageID);
         raid.setRaidLeaderName(e.getMessage().getRawContent());
-        if (SqliteDAL.getInstance().getRaidDao().updateLeaderDB(raid)) {
+        if (UnitOfWork.getDb().getRaidDao().updateLeaderDB(raid)) {
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Leader successfully updated in database.").queue());
         } else {
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Leader could not be updated in database.").queue());

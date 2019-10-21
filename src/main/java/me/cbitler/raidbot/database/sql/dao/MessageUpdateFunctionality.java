@@ -1,4 +1,4 @@
-package me.cbitler.raidbot.database.sqlite.dao;
+package me.cbitler.raidbot.database.sql.dao;
 
 import me.cbitler.raidbot.RaidBot;
 import me.cbitler.raidbot.models.FlexRole;

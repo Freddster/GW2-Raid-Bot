@@ -1,4 +1,4 @@
-package me.cbitler.raidbot.database.sqlite.dao;
+package me.cbitler.raidbot.database.sql.dao;
 
 import lombok.Getter;
 import me.cbitler.raidbot.database.QueryResult;

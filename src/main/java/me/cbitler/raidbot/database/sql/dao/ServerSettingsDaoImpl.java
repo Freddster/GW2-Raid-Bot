@@ -1,14 +1,15 @@
-package me.cbitler.raidbot.database.sqlite.dao;
+package me.cbitler.raidbot.database.sql.dao;
 
 import me.cbitler.raidbot.database.QueryResult;
-import me.cbitler.raidbot.database.sqlite.tables.ServerSettingsTable;
+import me.cbitler.raidbot.database.ServerSettingsDao;
+import me.cbitler.raidbot.database.sql.tables.ServerSettingsTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 
-public class ServerSettingsDao extends BaseFunctionality {
-    public ServerSettingsDao(Connection connection) {
+public class ServerSettingsDaoImpl extends BaseFunctionality implements ServerSettingsDao {
+    public ServerSettingsDaoImpl(Connection connection) {
         this.connection = connection;
     }
 

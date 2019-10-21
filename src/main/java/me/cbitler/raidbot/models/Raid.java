@@ -2,7 +2,7 @@ package me.cbitler.raidbot.models;
 
 import lombok.Data;
 import me.cbitler.raidbot.RaidBot;
-import me.cbitler.raidbot.database.sqlite.SqliteDAL;
+import me.cbitler.raidbot.database.UnitOfWork;
 import me.cbitler.raidbot.utility.Reactions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Emote;
@@ -161,9 +161,9 @@ public class Raid {
 
         String roleName = roles.get(0).getName();
         if (isValidNotFullRole(roleName)) // there is still space
-            success = SqliteDAL.getInstance().getUsersDao().addUser(raid, id, name, "", roleName, true, true);
+            success = UnitOfWork.getDb().getUsersDao().addUser(raid, id, name, "", roleName, true, true);
         else
-            success = SqliteDAL.getInstance().getUsersFlexRolesDao().addUserFlexRole(raid, id, name, "", roleName, true, true);
+            success = UnitOfWork.getDb().getUsersFlexRolesDao().addUserFlexRole(raid, id, name, "", roleName, true, true);
 
         return success;
     }
@@ -367,7 +367,7 @@ public class Raid {
             }
         }
 
-        SqliteDAL.getInstance().getUsersDao().removeUserFromRaid(raid, idToRemove);
+        UnitOfWork.getDb().getUsersDao().removeUserFromRaid(raid, idToRemove);
     }
 
     /**

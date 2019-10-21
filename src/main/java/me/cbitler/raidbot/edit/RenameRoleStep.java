@@ -1,12 +1,12 @@
 package me.cbitler.raidbot.edit;
 
-import java.util.List;
-
-import me.cbitler.raidbot.database.sqlite.SqliteDAL;
+import me.cbitler.raidbot.database.UnitOfWork;
 import me.cbitler.raidbot.models.Raid;
-import me.cbitler.raidbot.raids.RaidManager;
 import me.cbitler.raidbot.models.RaidRole;
+import me.cbitler.raidbot.raids.RaidManager;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
+
+import java.util.List;
 
 /**
  * Rename a role for the event
@@ -50,7 +50,7 @@ public class RenameRoleStep implements EditStep {
     			e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Enter a new name for the role *" + roles.get(roleID).getName() + "*:").queue());		
     	}
     	else { // message contains new name
-    		int out = SqliteDAL.getInstance().getRaidDao().renameRole(raid, roleID, e.getMessage().getRawContent());
+    		int out = UnitOfWork.getDb().getRaidDao().renameRole(raid, roleID, e.getMessage().getRawContent());
     		if (out == 0) {
     			e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Successfully renamed role.").queue());
     			raid.updateMessage();

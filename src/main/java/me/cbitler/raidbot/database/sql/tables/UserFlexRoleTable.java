@@ -1,4 +1,4 @@
-package me.cbitler.raidbot.database.sqlite.tables;
+package me.cbitler.raidbot.database.sql.tables;
 
 //TODO: Try to merge this into the user table by adding a flex column
 public class UserFlexRoleTable {

@@ -1,7 +1,8 @@
-package me.cbitler.raidbot.database.sqlite.dao;
+package me.cbitler.raidbot.database.sql.dao;
 
 import me.cbitler.raidbot.database.QueryResult;
-import me.cbitler.raidbot.database.sqlite.tables.UserFlexRoleTable;
+import me.cbitler.raidbot.database.UsersDao;
+import me.cbitler.raidbot.database.sql.tables.UserFlexRoleTable;
 import me.cbitler.raidbot.models.FlexRole;
 import me.cbitler.raidbot.models.Raid;
 import me.cbitler.raidbot.models.RaidUser;
@@ -13,11 +14,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static me.cbitler.raidbot.database.sqlite.tables.UserTable.*;
+import static me.cbitler.raidbot.database.sql.tables.UserTable.*;
 
-public class UsersDao extends MessageUpdateFunctionality {
+public class UsersDaoImpl extends MessageUpdateFunctionality implements UsersDao {
 
-    public UsersDao(Connection connection) {
+    public UsersDaoImpl(Connection connection) {
         this.connection = connection;
     }
 

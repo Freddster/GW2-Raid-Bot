@@ -1,7 +1,7 @@
-package me.cbitler.raidbot.database.sqlite.dao;
+package me.cbitler.raidbot.database.sql.dao;
 
 import me.cbitler.raidbot.database.QueryResult;
-import me.cbitler.raidbot.database.sqlite.tables.UserFlexRoleTable;
+import me.cbitler.raidbot.database.UsersFlexRolesDao;
 import me.cbitler.raidbot.models.FlexRole;
 import me.cbitler.raidbot.models.Raid;
 import me.cbitler.raidbot.models.RaidUser;
@@ -13,12 +13,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static me.cbitler.raidbot.database.sqlite.tables.UserFlexRoleTable.*;
+import static me.cbitler.raidbot.database.sql.tables.UserFlexRoleTable.*;
 
 
-public class UsersFlexRolesDao extends MessageUpdateFunctionality {
+public class UsersFlexRolesDaoImpl extends MessageUpdateFunctionality implements UsersFlexRolesDao {
 
-    public UsersFlexRolesDao(Connection connection) {
+    public UsersFlexRolesDaoImpl(Connection connection) {
         this.connection = connection;
     }
 
@@ -35,8 +35,7 @@ public class UsersFlexRolesDao extends MessageUpdateFunctionality {
      *                  when the roles are loaded from the database.
      * @return true if the user was added, false otherwise
      */
-    public boolean addUserFlexRole(Raid raid, String id, String name, String spec, String role, boolean db_insert,
-                                   boolean update_message) {
+    public boolean addUserFlexRole(Raid raid, String id, String name, String spec, String role, boolean db_insert, boolean update_message) {
         RaidUser user = new RaidUser(id, name, "", "");
         FlexRole flexRole = new FlexRole(spec, role);
 

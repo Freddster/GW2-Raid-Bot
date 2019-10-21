@@ -1,11 +1,20 @@
-package me.cbitler.raidbot.database.sqlite;
+package me.cbitler.raidbot.database.sql.sqlite;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import me.cbitler.raidbot.database.sqlite.dao.*;
-import me.cbitler.raidbot.database.sqlite.tables.RaidTable;
-import me.cbitler.raidbot.database.sqlite.tables.ServerSettingsTable;
-import me.cbitler.raidbot.database.sqlite.tables.UserFlexRoleTable;
-import me.cbitler.raidbot.database.sqlite.tables.UserTable;
+import me.cbitler.raidbot.database.RaidDao;
+import me.cbitler.raidbot.database.ServerSettingsDao;
+import me.cbitler.raidbot.database.UsersDao;
+import me.cbitler.raidbot.database.UsersFlexRolesDao;
+import me.cbitler.raidbot.database.sql.dao.RaidDaoImpl;
+import me.cbitler.raidbot.database.sql.dao.ServerSettingsDaoImpl;
+import me.cbitler.raidbot.database.sql.dao.UsersDaoImpl;
+import me.cbitler.raidbot.database.sql.dao.UsersFlexRolesDaoImpl;
+import me.cbitler.raidbot.database.sql.dbDAL;
+import me.cbitler.raidbot.database.sql.tables.RaidTable;
+import me.cbitler.raidbot.database.sql.tables.ServerSettingsTable;
+import me.cbitler.raidbot.database.sql.tables.UserFlexRoleTable;
+import me.cbitler.raidbot.database.sql.tables.UserTable;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,38 +22,28 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 @Getter
-public class SqliteDAL {
+public class SqliteDAL implements dbDAL {
     private static SqliteDAL instance = null;
 
-    private SqliteDatabaseDAOImpl sqliteDatabaseDAO;
     private RaidDao raidDao;
     private ServerSettingsDao serverSettingsDao;
     private UsersDao usersDao;
     private UsersFlexRolesDao usersFlexRolesDao;
+    @Getter(AccessLevel.NONE)
+    private final Connection connection;
 
-    public static synchronized SqliteDAL getInstance() {
-        if (instance == null) {
-            instance = new SqliteDAL();
-            return instance;
-        }
-        return instance;
-    }
-
-    private SqliteDAL() {
-        Connection connection = connect("GW2-raid-bot.db");
+    public SqliteDAL() {
+        connection = connect("GW2-raid-bot.db");
         initDatabaseTables(connection);
-
-        sqliteDatabaseDAO = new SqliteDatabaseDAOImpl();
-        sqliteDatabaseDAO.setConnection(connection);
 
         initializeDao();
     }
 
     private void initializeDao() {
-        raidDao = new RaidDao(sqliteDatabaseDAO.getConnection());
-        serverSettingsDao = new ServerSettingsDao(sqliteDatabaseDAO.getConnection());
-        usersDao = new UsersDao(sqliteDatabaseDAO.getConnection());
-        usersFlexRolesDao = new UsersFlexRolesDao(sqliteDatabaseDAO.getConnection());
+        raidDao = new RaidDaoImpl(connection);
+        serverSettingsDao = new ServerSettingsDaoImpl(connection);
+        usersDao = new UsersDaoImpl(connection);
+        usersFlexRolesDao = new UsersFlexRolesDaoImpl(connection);
     }
 
     /**
