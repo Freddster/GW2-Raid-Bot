@@ -22,7 +22,7 @@ public class ServerSettingsDaoImpl extends BaseFunctionality implements ServerSe
      */
     public String getEventLeaderRole(String serverId) {
         try {
-            QueryResult results = query("SELECT `" + ServerSettingsTable.RAID_LEADER_ROLE + "` FROM `" + ServerSettingsTable.TABLE_NAME + "` WHERE `" + ServerSettingsTable.SERVER_ID + "` = ?", new String[]{serverId});
+            QueryResult results = query("SELECT " + ServerSettingsTable.RAID_LEADER_ROLE + " FROM " + ServerSettingsTable.TABLE_NAME + " WHERE " + ServerSettingsTable.SERVER_ID + " = ?", new String[]{serverId});
 
             if (results.getResults().next()) {
                 return results.getResults().getString(ServerSettingsTable.RAID_LEADER_ROLE);
@@ -42,12 +42,12 @@ public class ServerSettingsDaoImpl extends BaseFunctionality implements ServerSe
      */
     public void setEventLeaderRole(String serverId, String role) {
         try {
-            update("INSERT INTO `" + ServerSettingsTable.TABLE_NAME + "` (`" + ServerSettingsTable.SERVER_ID + "`,`" + ServerSettingsTable.RAID_LEADER_ROLE + "`) VALUES (?,?)",
+            update("INSERT INTO " + ServerSettingsTable.TABLE_NAME + " (" + ServerSettingsTable.SERVER_ID + "," + ServerSettingsTable.RAID_LEADER_ROLE + ") VALUES (?,?)",
                     new String[]{serverId, role});
         } catch (SQLException e) {
             //TODO: There is probably a much better way of doing this
             try {
-                update("UPDATE `" + ServerSettingsTable.TABLE_NAME + "` SET `" + ServerSettingsTable.RAID_LEADER_ROLE + "` = ? WHERE `" + ServerSettingsTable.SERVER_ID + "` = ?",
+                update("UPDATE " + ServerSettingsTable.TABLE_NAME + " SET " + ServerSettingsTable.RAID_LEADER_ROLE + " = ? WHERE " + ServerSettingsTable.SERVER_ID + " = ?",
                         new String[]{role, serverId});
             } catch (SQLException e1) {
                 // Not much we can do if there is also an insert error

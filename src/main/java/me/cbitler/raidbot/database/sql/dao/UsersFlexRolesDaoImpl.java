@@ -41,7 +41,7 @@ public class UsersFlexRolesDaoImpl extends MessageUpdateFunctionality implements
 
         if (db_insert) {
             try {
-                update("INSERT INTO `" + TABLE_NAME + "` (`" + USER_ID + "`, `" + USERNAME + "`, `" + SPEC + "`, `" + ROLE + "`, `" + RAID_ID + "`)"
+                update("INSERT INTO " + TABLE_NAME + " (" + USER_ID + ", " + USERNAME + ", " + SPEC + ", " + ROLE + ", " + RAID_ID + ")"
                         + " VALUES (?,?,?,?,?)", new String[]{id, name, spec, role, raid.getMessageId()});
             } catch (Exception e) {
                 return false;
@@ -60,11 +60,11 @@ public class UsersFlexRolesDaoImpl extends MessageUpdateFunctionality implements
     }
 
     public void deleteRaid(String messageId) throws SQLException {
-        update("DELETE FROM `" + TABLE_NAME + "` WHERE `" + RAID_ID + "` = ?", new String[]{messageId});
+        update("DELETE FROM " + TABLE_NAME + " WHERE " + RAID_ID + " = ?", new String[]{messageId});
     }
 
     public QueryResult getAllFlexUsers() throws SQLException {
-        return query("SELECT * FROM `" + TABLE_NAME + "`", new String[]{});
+        return query("SELECT * FROM " + TABLE_NAME + "", new String[]{});
     }
 
     /**
@@ -93,7 +93,7 @@ public class UsersFlexRolesDaoImpl extends MessageUpdateFunctionality implements
         }
 
         try {
-            update("DELETE FROM `" + TABLE_NAME + "` WHERE `" + USER_ID + "` = ? and `" + RAID_ID + "` = ? and `" + ROLE + "` = ? and `" + SPEC + "` = ?",
+            update("DELETE FROM " + TABLE_NAME + " WHERE " + USER_ID + " = ? and " + RAID_ID + " = ? and " + ROLE + " = ? and " + SPEC + " = ?",
                     new String[]{id, raid.getMessageId(), role, spec});
         } catch (SQLException e) {
             e.printStackTrace();

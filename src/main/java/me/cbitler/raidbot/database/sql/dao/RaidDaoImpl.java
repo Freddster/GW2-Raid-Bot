@@ -79,7 +79,7 @@ public class RaidDaoImpl extends BaseFunctionality implements RaidDao {
     }
 
     public void deleteRaid(String messageId) throws SQLException {
-        update("DELETE FROM `" + TABLE_NAME + "` WHERE `" + RAID_ID + "` = ?", new String[]{messageId});
+        update("DELETE FROM " + TABLE_NAME + " WHERE " + RAID_ID + " = ?", new String[]{messageId});
     }
 
     /**
@@ -104,7 +104,7 @@ public class RaidDaoImpl extends BaseFunctionality implements RaidDao {
     }
 
     public QueryResult getAllRaids() throws SQLException {
-        return query("SELECT * FROM `" + TABLE_NAME + "`", new String[]{});
+        return query("SELECT * FROM " + TABLE_NAME, new String[]{});
     }
 
     /**
@@ -120,7 +120,7 @@ public class RaidDaoImpl extends BaseFunctionality implements RaidDao {
         String roles = formatRolesForDatabase(raid.getRolesWithNumbers());
 
         try {
-            update("INSERT INTO `" + TABLE_NAME + "` (`" + RAID_ID + "`, `" + SERVER_ID + "`, `" + CHANNEL_ID + "`, `" + IS_OPEN_WORLD + "`, `" + LEADER + "`, `" + EVENT_NAME + "`, `" + EVENT_DESCRIPTION + "`, `" + EVENT_DATE + "`, `" + EVENT_TIME + "`, `" + ROLES + "`) VALUES (?,?,?,?,?,?,?,?,?,?)",
+            update("INSERT INTO " + TABLE_NAME + " (" + RAID_ID + ", " + SERVER_ID + ", " + CHANNEL_ID + ", " + IS_OPEN_WORLD + ", " + LEADER + ", " + EVENT_NAME + ", " + EVENT_DESCRIPTION + ", " + EVENT_DATE + ", " + EVENT_TIME + ", " + ROLES + ") VALUES (?,?,?,?,?,?,?,?,?,?)",
                     new String[]{messageId, serverId, channelId, Boolean.toString(raid.isOpenWorld()),
                             raid.getLeaderName(), raid.getName(), raid.getDescription(), raid.getDate(), raid.getTime(),
                             roles});
@@ -163,11 +163,11 @@ public class RaidDaoImpl extends BaseFunctionality implements RaidDao {
         // rename in database
         String rolesString = formatRolesForDatabase(raid.getRoles());
         try {
-            update("UPDATE `" + TABLE_NAME + "` SET `" + ROLES + "`=? WHERE `" + RAID_ID + "`=?",
+            update("UPDATE " + TABLE_NAME + " SET " + ROLES + "=? WHERE " + RAID_ID + "=?",
                     new String[]{rolesString, raid.getMessageId()});
-            update("UPDATE `" + UserTable.TABLE_NAME + "` SET `" + UserTable.ROLE + "`=? WHERE `" + UserTable.ROLE + "`=? AND `" + UserTable.RAID_ID + "`=?",
+            update("UPDATE " + UserTable.TABLE_NAME + " SET " + UserTable.ROLE + "=? WHERE " + UserTable.ROLE + "=? AND " + UserTable.RAID_ID + "=?",
                     new String[]{newName, oldName, raid.getMessageId()});
-            update("UPDATE `" + UserFlexRoleTable.TABLE_NAME + "` SET `" + UserFlexRoleTable.ROLE + "`=? WHERE `" + UserFlexRoleTable.ROLE + "`=? AND `" + UserFlexRoleTable.RAID_ID + "`=?",
+            update("UPDATE " + UserFlexRoleTable.TABLE_NAME + " SET " + UserFlexRoleTable.ROLE + "=? WHERE " + UserFlexRoleTable.ROLE + "=? AND " + UserFlexRoleTable.RAID_ID + "=?",
                     new String[]{newName, oldName, raid.getMessageId()});
 
             return ROLE_ADDED;
@@ -182,7 +182,7 @@ public class RaidDaoImpl extends BaseFunctionality implements RaidDao {
      */
     public boolean updateDateDB(Raid raid) {
         try {
-            update("UPDATE `" + TABLE_NAME + "` SET `" + EVENT_DATE + "`=? WHERE `" + RAID_ID + "`=?",
+            update("UPDATE " + TABLE_NAME + " SET " + EVENT_DATE + "=? WHERE " + RAID_ID + "=?",
                     new String[]{raid.getDate(), raid.getMessageId()});
         } catch (SQLException e) {
             e.printStackTrace();
@@ -196,7 +196,7 @@ public class RaidDaoImpl extends BaseFunctionality implements RaidDao {
      */
     public boolean updateDescriptionDB(Raid raid) {
         try {
-            update("UPDATE `" + TABLE_NAME + "` SET `" + EVENT_DESCRIPTION + "`=? WHERE `" + RAID_ID + "`=?",
+            update("UPDATE " + TABLE_NAME + " SET " + EVENT_DESCRIPTION + "=? WHERE " + RAID_ID + "=?",
                     new String[]{raid.getDescription(), raid.getMessageId()});
         } catch (SQLException e) {
             e.printStackTrace();
@@ -210,7 +210,7 @@ public class RaidDaoImpl extends BaseFunctionality implements RaidDao {
      */
     public boolean updateLeaderDB(Raid raid) {
         try {
-            update("UPDATE `" + TABLE_NAME + "` SET `" + LEADER + "`=? WHERE `" + RAID_ID + "`=?",
+            update("UPDATE " + TABLE_NAME + " SET " + LEADER + "=? WHERE " + RAID_ID + "=?",
                     new String[]{raid.getRaidLeaderName(), raid.getMessageId()});
         } catch (SQLException e) {
             e.printStackTrace();
@@ -224,7 +224,7 @@ public class RaidDaoImpl extends BaseFunctionality implements RaidDao {
      */
     public boolean updateNameDB(Raid raid) {
         try {
-            update("UPDATE `" + TABLE_NAME + "` SET `" + EVENT_NAME + "`=? WHERE `" + RAID_ID + "`=?",
+            update("UPDATE " + TABLE_NAME + " SET " + EVENT_NAME + "=? WHERE " + RAID_ID + "=?",
                     new String[]{raid.getName(), raid.getMessageId()});
         } catch (SQLException e) {
             e.printStackTrace();
@@ -238,7 +238,7 @@ public class RaidDaoImpl extends BaseFunctionality implements RaidDao {
      */
     public boolean updateTimeDB(Raid raid) {
         try {
-            update("UPDATE `" + TABLE_NAME + "` SET `" + EVENT_TIME + "`=? WHERE `" + RAID_ID + "`=?",
+            update("UPDATE " + TABLE_NAME + " SET " + EVENT_TIME + "=? WHERE " + RAID_ID + "=?",
                     new String[]{raid.getTime(), raid.getMessageId()});
         } catch (SQLException e) {
             e.printStackTrace();
@@ -267,7 +267,7 @@ public class RaidDaoImpl extends BaseFunctionality implements RaidDao {
     private int updateRaidRoles(Raid raid) {
         String rolesString = formatRolesForDatabase(raid.getRoles());
         try {
-            update("UPDATE `" + TABLE_NAME + "` SET `" + ROLES + "`=? WHERE `" + RAID_ID + "`=?",
+            update("UPDATE " + TABLE_NAME + " SET " + ROLES + "=? WHERE " + RAID_ID + "=?",
                     new String[]{rolesString, raid.getMessageId()});
             return ROLE_ADDED;
         } catch (SQLException e) {

@@ -16,6 +16,7 @@ import me.cbitler.raidbot.database.sql.tables.ServerSettingsTable;
 import me.cbitler.raidbot.database.sql.tables.UserFlexRoleTable;
 import me.cbitler.raidbot.database.sql.tables.UserTable;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -32,11 +33,11 @@ public class PostgresDAL implements dbDAL {
     private final Connection connection;
 
 
-    public PostgresDAL(String dbUrl) {
-        connection = connect(dbUrl);
-        initDatabaseTables(connection);
+    public PostgresDAL(URI dbUrl) {
+        this.connection = connect(dbUrl);
+        initDatabaseTables(this.connection);
 
-        initializeDao(connection);
+        initializeDao(this.connection);
     }
 
     private void initializeDao(Connection connection) {
@@ -49,11 +50,22 @@ public class PostgresDAL implements dbDAL {
     /**
      * Connect to the SQLite database and create the tables if they don't exist
      */
-    private Connection connect(String dbUrl) {
+    private Connection connect(URI dbUri) {
         try {
-            return DriverManager.getConnection(dbUrl);
+            String username = dbUri.getUserInfo().split(":")[0];
+            String password = dbUri.getUserInfo().split(":")[1];
+            String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath() + "?sslmode=require";
+
+            System.out.println("username: " + username);
+            System.out.println("password: " + password);
+            System.out.println("dbUrl: " + dbUrl);
+
+            return DriverManager.getConnection(dbUrl, username, password);
+
+//            return DriverManager.getConnection(dbUrl);
         } catch (SQLException e) {
             System.out.println("Postgres SQL connection error");
+            e.printStackTrace();
             System.exit(1);
         }
         //This should be unreachable as the program will exit if the connection is unable to be made
