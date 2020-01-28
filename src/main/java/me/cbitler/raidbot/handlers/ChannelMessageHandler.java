@@ -121,11 +121,12 @@ public class ChannelMessageHandler extends ListenerAdapter {
                 }
 
             }
-        } else {
-            if (!e.getMember().getPermissions().contains(Permission.MANAGE_SERVER)) {
-                e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("You do not have permissions to manage events").queue());
-            }
         }
+//        else {
+//            if (!e.getMember().getPermissions().contains(Permission.MANAGE_SERVER)) {
+//                e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("You do not have permissions to manage events").queue());
+//            }
+//        }
 
         if (e.getMember().getPermissions().contains(Permission.MANAGE_SERVER) &&
                 (e.getMessage().getRawContent().toLowerCase().startsWith(CommandRegistry.CMD_PREFIX + CommandRegistry.SET_EVENT_MANAGER_ROLE_COMMAND))) {

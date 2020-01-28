@@ -11,7 +11,6 @@ public class UnitOfWork {
     private static dbDAL dbDAL = null;
 
     public static synchronized dbDAL getDb() {
-        System.out.println("UnitOfWork getDb"); 
         if (dbDAL == null) {
             System.out.println("UnitOfWork db == null");
             new UnitOfWork();

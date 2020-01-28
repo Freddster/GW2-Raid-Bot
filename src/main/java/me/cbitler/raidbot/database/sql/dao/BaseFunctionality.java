@@ -21,7 +21,7 @@ public abstract class BaseFunctionality {
      * @throws SQLException
      */
     protected QueryResult query(String query, String[] data) throws SQLException {
-        System.out.println("Query: " + query);
+//        System.out.println("Query: " + query);
         PreparedStatement stmt = connection.prepareStatement(query);
         int i = 1;
         for(String input : data) {
@@ -41,7 +41,7 @@ public abstract class BaseFunctionality {
      * @throws SQLException
      */
     protected void update(String query, String[] data) throws SQLException {
-        System.out.println("update: " + query);
+//        System.out.println("update: " + query);
         PreparedStatement stmt = connection.prepareStatement(query);
         int i = 1;
         for(String input : data) {
