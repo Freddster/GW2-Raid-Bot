@@ -29,7 +29,7 @@ public class RaidManager {
     private RaidManager() {
     }
 
-    private static List<Raid> raids = new ArrayList<>();
+//    private static List<Raid> raids = new ArrayList<>();
 
     /**
      * Create a raid. This turns a PendingRaid object into a Raid object and inserts
@@ -86,48 +86,7 @@ public class RaidManager {
      */
     public static void loadRaids() {
         try {
-            QueryResult results = UnitOfWork.getDb().getRaidDao().getAllRaids();
-            while (results.getResults().next()) {
-                //TODO: USE NAMES FROM TABLE
-                String name = results.getResults().getString("name");
-                String description = results.getResults().getString("description");
-                if (description == null) {
-                    description = "N/A";
-                }
-                String date = results.getResults().getString("date");
-                String time = results.getResults().getString("time");
-                String rolesText = results.getResults().getString("roles");
-                String messageId = results.getResults().getString("raidId");
-                String serverId = results.getResults().getString("serverId");
-                String channelId = results.getResults().getString("channelId");
-
-                String leaderName = null;
-                try {
-                    leaderName = results.getResults().getString("leader");
-                } catch (Exception e) {
-                }
-
-                boolean isOpenWorld = false;
-                try {
-                    isOpenWorld = results.getResults().getString("isOpenWorld").equals("true");
-                } catch (Exception e) {
-                }
-
-                Raid raid = new Raid(messageId, serverId, channelId, leaderName, name, description, date, time,
-                        isOpenWorld);
-                String[] roleSplit = rolesText.split(";");
-                for (String roleAndAmount : roleSplit) {
-                    String[] parts = roleAndAmount.split(":");
-                    int amnt = Integer.parseInt(parts[0]);
-                    String role = parts[1];
-                    raid.getRoles().add(new RaidRole(amnt, role));
-                }
-                raids.add(raid);
-            }
-            results.getResults().close();
-            results.getStmt().close();
-
-            QueryResult userResults = UnitOfWork.getDb().getUsersDao().getAllUsers();
+            QueryResult userResults = UnitOfWork.getUsersDao().getAllUsers();
 
             while (userResults.getResults().next()) {
                 //TODO: FIX DUPLICATE STUFF
@@ -183,28 +142,11 @@ public class RaidManager {
     public static boolean deleteRaid(String messageId) {
         Raid r = getRaid(messageId);
         if (r != null) {
-            // try {
-            // RaidBot.getInstance().getServer(r.getServerId())
-            // .getTextChannelById(r.getChannelId()).getMessageById(messageId).queue(message
-            // -> message.delete().queue());
-            // } catch (Exception e) {
-            // // Nothing, the message doesn't exist - it can happen
-            // }
-
-            Iterator<Raid> raidIterator = raids.iterator();
-            while (raidIterator.hasNext()) {
-                Raid raid = raidIterator.next();
-                if (raid.getMessageId().equalsIgnoreCase(messageId)) {
-                    raidIterator.remove();
-                }
-            }
-
             try {
-                UnitOfWork.getDb().getRaidDao().deleteRaid(messageId);
-                UnitOfWork.getDb().getUsersDao().deleteRaid(messageId);
-                UnitOfWork.getDb().getUsersFlexRolesDao().deleteRaid(messageId);
+                UnitOfWork.deleteRaid(messageId);
             } catch (Exception e) {
-                System.out.println("Error encountered deleting event.");
+                e.printStackTrace();
+                System.err.println("Error encountered deleting event.");
             }
 
             return true;
@@ -221,12 +163,19 @@ public class RaidManager {
      * @return The raid object related to that messageId, if it exist.
      */
     public static Raid getRaid(String messageId) {
-        for (Raid raid : raids) {
-            if (raid.getMessageId().equalsIgnoreCase(messageId)) {
-                return raid;
-            }
+        try {
+            return UnitOfWork.getRaidDao().getRaid(messageId);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
+
+//        for (Raid raid : raids) {
+//            if (raid.getMessageId().equalsIgnoreCase(messageId)) {
+//                return raid;
+//            }
+//        }
+//        return null;
     }
 
     /**

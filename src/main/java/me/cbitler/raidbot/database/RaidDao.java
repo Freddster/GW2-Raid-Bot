@@ -5,6 +5,7 @@ import me.cbitler.raidbot.models.Raid;
 import me.cbitler.raidbot.models.RaidRole;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public interface RaidDao {
     int ROLE_ADDED = 0;
@@ -21,7 +22,7 @@ public interface RaidDao {
 
     int deleteRole(Raid raid, int roleId);
 
-    QueryResult getAllRaids() throws SQLException;
+    List<Raid> getAllRaids() throws SQLException;
 
     boolean insertToDatabase(PendingRaid raid, String id, String serverId, String channelId);
 
@@ -36,4 +37,6 @@ public interface RaidDao {
     boolean updateNameDB(Raid raid);
 
     boolean updateTimeDB(Raid raid);
+
+    Raid getRaid(String messageId) throws SQLException;
 }

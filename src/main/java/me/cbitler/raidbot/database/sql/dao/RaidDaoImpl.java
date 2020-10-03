@@ -8,6 +8,7 @@ import me.cbitler.raidbot.models.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,8 +104,30 @@ public class RaidDaoImpl extends BaseFunctionality implements RaidDao {
         return updateRaidRoles(raid);
     }
 
-    public QueryResult getAllRaids() throws SQLException {
-        return query("SELECT * FROM " + TABLE_NAME, new String[]{});
+    public List<Raid> getAllRaids() throws SQLException {
+        QueryResult query = query("SELECT * FROM " + TABLE_NAME, new String[]{});
+        List<Raid> raidList = new ArrayList<>();
+        while (query.getResults().next()) {
+            raidList.add(new Raid(query));
+        }
+        query.getResults().close();
+        query.getStmt().close();
+        return raidList;
+    }
+
+    @Override
+    public Raid getRaid(String messageId) throws SQLException {
+        String s = "SELECT * FROM " + TABLE_NAME + " WHERE " + RAID_ID + " = " + messageId;
+        QueryResult query = query(s, new String[]{});
+        try {
+            if (query.getResults().next()) {
+                return new Raid(query);
+            }
+        } finally {
+            query.getResults().close();
+            query.getStmt().close();
+        }
+        return null;
     }
 
     /**
