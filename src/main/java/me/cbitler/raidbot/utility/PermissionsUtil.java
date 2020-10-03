@@ -20,7 +20,7 @@ public class PermissionsUtil {
      * @return True if they have the role, false if they don't
      */
     public static boolean hasEventLeaderRole(Member member) {
-        String eventLeaderRole = UnitOfWork.getDb().getServerSettingsDao().getEventLeaderRole(member.getGuild().getId());
+        String eventLeaderRole = UnitOfWork.getServerSettingsDao().getEventLeaderRole(member.getGuild().getId());
         if (eventLeaderRole != null) {
             for (Role role : member.getRoles()) {
                 if (role.getName().equalsIgnoreCase(eventLeaderRole)) {

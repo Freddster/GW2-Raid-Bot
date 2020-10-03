@@ -27,7 +27,7 @@ public class EditTimeStep implements EditStep {
     public boolean handleDM(PrivateMessageReceivedEvent e) {
         Raid raid = RaidManager.getRaid(messageID);
         raid.setTime(e.getMessage().getRawContent());
-        if (UnitOfWork.getDb().getRaidDao().updateTimeDB(raid)) {
+        if (UnitOfWork.getRaidDao().updateTimeDB(raid)) {
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Time successfully updated in database.").queue());
         } else {
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Time could not be updated in database.").queue());

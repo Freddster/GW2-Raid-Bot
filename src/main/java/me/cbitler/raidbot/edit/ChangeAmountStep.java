@@ -55,7 +55,7 @@ public class ChangeAmountStep implements EditStep {
         {
             if (inputNumber > 0) {
                 finished = true; // we are done after we try to add
-                int out = UnitOfWork.getDb().getRaidDao().changeAmountRole(raid, roleID, inputNumber);
+                int out = UnitOfWork.getRaidDao().changeAmountRole(raid, roleID, inputNumber);
                 if (out == 0) { // success
                     e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Successfully changed amount.").queue());
                     raid.updateMessage();

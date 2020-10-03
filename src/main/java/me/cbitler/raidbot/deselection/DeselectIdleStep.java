@@ -38,7 +38,7 @@ public class DeselectIdleStep implements DeselectionStep {
     		if (choiceId == 0) { // main
         		// check if this user has a main role
         		if (raid.isUserInRaid(e.getAuthor().getId())) {
-        			UnitOfWork.getDb().getUsersDao().removeUserFromMainRoles(raid, e.getAuthor().getId());
+        			UnitOfWork.getUsersDao().removeUserFromMainRoles(raid, e.getAuthor().getId());
         			e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Removed from main role. You can choose another type or write *done*.").queue());
         			return false;
         		}
@@ -58,7 +58,7 @@ public class DeselectIdleStep implements DeselectionStep {
         		}
         	} else if (choiceId == 2) { // all
         		nextStep = null;
-				UnitOfWork.getDb().getUsersDao().removeUserFromRaid(raid, e.getAuthor().getId());
+				UnitOfWork.getUsersDao().removeUserFromRaid(raid, e.getAuthor().getId());
         		return true;
         	} else { // some other integer
         		e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Invalid choice. Try again or type *done* to quit deselection.").queue());

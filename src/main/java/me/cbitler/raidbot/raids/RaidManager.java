@@ -47,14 +47,14 @@ public class RaidManager {
             // We always go with the first channel if there is more than one
             try {
                 channels.get(0).sendMessage(message).queue(message1 -> {
-                    boolean inserted = UnitOfWork.getDb().getRaidDao().insertToDatabase(raid, message1.getId(), message1.getGuild().getId(),
+                    boolean inserted = UnitOfWork.getRaidDao().insertToDatabase(raid, message1.getId(), message1.getGuild().getId(),
                             message1.getChannel().getId());
                     if (inserted) {
                         Raid newRaid = new Raid(message1.getId(), message1.getGuild().getId(),
                                 message1.getChannel().getId(), raid.getLeaderName(), raid.getName(),
                                 raid.getDescription(), raid.getDate(), raid.getTime(), raid.isOpenWorld());
                         newRaid.getRoles().addAll(raid.getRolesWithNumbers());
-                        raids.add(newRaid);
+//                        raids.add(newRaid);
                         newRaid.updateMessage();
 
                         List<Emote> emoteList;
@@ -140,11 +140,11 @@ public class RaidManager {
 
                 Raid raid = RaidManager.getRaid(raidId);
                 if (raid != null) {
-                    UnitOfWork.getDb().getUsersDao().addUser(raid, id, name, spec, role, false, false);
+                    UnitOfWork.getUsersDao().addUser(raid, id, name, spec, role, false, false);
                 }
             }
 
-            QueryResult userFlexRolesResults = UnitOfWork.getDb().getUsersFlexRolesDao().getAllFlexUsers();
+            QueryResult userFlexRolesResults = UnitOfWork.getUsersFlexRolesDao().getAllFlexUsers();
 
             while (userFlexRolesResults.getResults().next()) {
                 String id = userFlexRolesResults.getResults().getString("userId");
@@ -155,11 +155,15 @@ public class RaidManager {
 
                 Raid raid = RaidManager.getRaid(raidId);
                 if (raid != null) {
-                    UnitOfWork.getDb().getUsersFlexRolesDao().addUserFlexRole(raid, id, name, spec, role, false, false);
+                    UnitOfWork.getUsersFlexRolesDao().addUserFlexRole(raid, id, name, spec, role, false, false);
                 }
             }
 
-            for (Raid raid : raids) {
+
+//            for (Raid raid : raids) {
+//                raid.updateMessage();
+//            }
+            for (Raid raid : UnitOfWork.getRaidDao().getAllRaids()) {
                 raid.updateMessage();
             }
         } catch (SQLException e) {

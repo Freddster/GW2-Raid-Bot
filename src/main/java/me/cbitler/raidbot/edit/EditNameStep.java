@@ -27,7 +27,7 @@ public class EditNameStep implements EditStep {
     public boolean handleDM(PrivateMessageReceivedEvent e) {
         Raid raid = RaidManager.getRaid(messageID);
         raid.setName(e.getMessage().getRawContent());
-        if (UnitOfWork.getDb().getRaidDao().updateNameDB(raid)) {
+        if (UnitOfWork.getRaidDao().updateNameDB(raid)) {
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Name successfully updated in database.").queue());
         } else {
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Name could not be updated in database.").queue());

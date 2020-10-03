@@ -34,7 +34,7 @@ public class AddRoleStep implements EditStep {
                 int amount = Integer.parseInt(parts[0]);
                 String roleName = parts[1];
                 Raid raid = RaidManager.getRaid(messageID);
-                int out = UnitOfWork.getDb().getRaidDao().addRole(raid, new RaidRole(amount, roleName));
+                int out = UnitOfWork.getRaidDao().addRole(raid, new RaidRole(amount, roleName));
                 if(out == RaidDao.ROLE_ADDED) {
                     e.getChannel().sendMessage("Role added.").queue();
                     raid.updateMessage();

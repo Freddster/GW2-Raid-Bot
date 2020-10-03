@@ -132,7 +132,7 @@ public class ChannelMessageHandler extends ListenerAdapter {
                 (e.getMessage().getRawContent().toLowerCase().startsWith(CommandRegistry.CMD_PREFIX + CommandRegistry.SET_EVENT_MANAGER_ROLE_COMMAND))) {
             String[] commandParts = e.getMessage().getRawContent().split(" ");
             String raidLeaderRole = combineArguments(commandParts, 1);
-            UnitOfWork.getDb().getServerSettingsDao().setEventLeaderRole(e.getMember().getGuild().getId(), raidLeaderRole);
+            UnitOfWork.getServerSettingsDao().setEventLeaderRole(e.getMember().getGuild().getId(), raidLeaderRole);
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Event manager role updated to: " + raidLeaderRole).queue());
             e.getMessage().delete().queue();
         }

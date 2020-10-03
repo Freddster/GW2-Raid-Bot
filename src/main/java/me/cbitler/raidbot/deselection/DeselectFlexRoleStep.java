@@ -50,7 +50,7 @@ public class DeselectFlexRoleStep implements DeselectionStep {
             // remove all
             ArrayList<String> removedRaidUsers = new ArrayList<String>();
             for (FlexRole rRole : rRoles) {
-                boolean removedSuccessfully = UnitOfWork.getDb().getUsersFlexRolesDao().removeUserFromFlexRoles(raid, e.getAuthor().getId(), rRole.getRole(), rRole.getSpec());
+                boolean removedSuccessfully = UnitOfWork.getUsersFlexRolesDao().removeUserFromFlexRoles(raid, e.getAuthor().getId(), rRole.getRole(), rRole.getSpec());
                 if (removedSuccessfully) {
                     removedRaidUsers.add("\"" + rRole.getSpec() + ", " + rRole.getRole() + "\"");
                 }
@@ -71,7 +71,7 @@ public class DeselectFlexRoleStep implements DeselectionStep {
                     int roleSelector = Integer.parseInt(role) - 2;
                     if (roleSelector >= 0 && roleSelector < rRoles.size()) {
                         FlexRole raidRole = rRoles.get(roleSelector);
-                        boolean removedSuccessfully = UnitOfWork.getDb().getUsersFlexRolesDao().removeUserFromFlexRoles(raid, e.getAuthor().getId(), raidRole.getRole(), raidRole.getSpec());
+                        boolean removedSuccessfully = UnitOfWork.getUsersFlexRolesDao().removeUserFromFlexRoles(raid, e.getAuthor().getId(), raidRole.getRole(), raidRole.getSpec());
                         if (removedSuccessfully) {
                             removedRaidUsers.add("\"" + raidRole.getSpec() + ", " + raidRole.getRole() + "\"");
                         }

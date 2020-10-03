@@ -27,7 +27,7 @@ public class EditDescriptionStep implements EditStep {
     public boolean handleDM(PrivateMessageReceivedEvent e) {
         Raid raid = RaidManager.getRaid(messageID);
         raid.setDescription(e.getMessage().getRawContent());
-        if (UnitOfWork.getDb().getRaidDao().updateDescriptionDB(raid)) {
+        if (UnitOfWork.getRaidDao().updateDescriptionDB(raid)) {
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Description successfully updated in database.").queue());
         } else {
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Description could not be updated in database.").queue());

@@ -27,7 +27,7 @@ public class EditLeaderStep implements EditStep {
     public boolean handleDM(PrivateMessageReceivedEvent e) {
         Raid raid = RaidManager.getRaid(messageID);
         raid.setRaidLeaderName(e.getMessage().getRawContent());
-        if (UnitOfWork.getDb().getRaidDao().updateLeaderDB(raid)) {
+        if (UnitOfWork.getRaidDao().updateLeaderDB(raid)) {
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Leader successfully updated in database.").queue());
         } else {
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Leader could not be updated in database.").queue());

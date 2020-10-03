@@ -50,7 +50,7 @@ public class RenameRoleStep implements EditStep {
     			e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Enter a new name for the role *" + roles.get(roleID).getName() + "*:").queue());		
     	}
     	else { // message contains new name
-    		int out = UnitOfWork.getDb().getRaidDao().renameRole(raid, roleID, e.getMessage().getRawContent());
+    		int out = UnitOfWork.getRaidDao().renameRole(raid, roleID, e.getMessage().getRawContent());
     		if (out == 0) {
     			e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Successfully renamed role.").queue());
     			raid.updateMessage();

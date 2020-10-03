@@ -58,7 +58,7 @@ public class ChangeFlexOnlyStep implements EditStep {
                 finished = true; // we are done after we try to add
                 boolean newStatus = false;
                 if (inputNumber == 1) newStatus = true;
-                int out = UnitOfWork.getDb().getRaidDao().changeFlexOnlyRole(raid, roleID, newStatus);
+                int out = UnitOfWork.getRaidDao().changeFlexOnlyRole(raid, roleID, newStatus);
                 if (out == 0) { // success
                     final String statusChange = newStatus ? "enabled" : "disabled";
                     e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Successfully *" + statusChange + "* `flex only` status.").queue());

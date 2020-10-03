@@ -2,12 +2,15 @@ package me.cbitler.raidbot.models;
 
 import lombok.Data;
 import me.cbitler.raidbot.RaidBot;
+import me.cbitler.raidbot.database.QueryResult;
 import me.cbitler.raidbot.database.UnitOfWork;
+import me.cbitler.raidbot.database.sql.tables.RaidTable;
 import me.cbitler.raidbot.utility.Reactions;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Emote;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +51,7 @@ public class Raid {
      * @param time           The time of the raid
      */
     public Raid(String messageId, String serverId, String channelId, String raidLeaderName, String name,
-            String description, String date, String time, boolean isOpenWorld) {
+                String description, String date, String time, boolean isOpenWorld) {
         this.messageId = messageId;
         this.serverId = serverId;
         this.channelId = channelId;
@@ -58,6 +61,29 @@ public class Raid {
         this.date = date;
         this.time = time;
         this.isOpenWorld = isOpenWorld;
+    }
+
+    public Raid(QueryResult query) throws SQLException {
+        this.name = query.getResults().getString(RaidTable.EVENT_NAME);
+        this.description = query.getResults().getString(RaidTable.EVENT_DESCRIPTION);
+        if (this.description == null) {
+            this.description = "N/A";
+        }
+        this.date = query.getResults().getString(RaidTable.EVENT_DATE);
+        this.time = query.getResults().getString(RaidTable.EVENT_TIME);
+        this.messageId = query.getResults().getString(RaidTable.RAID_ID);
+        this.serverId = query.getResults().getString(RaidTable.SERVER_ID);
+        this.channelId = query.getResults().getString(RaidTable.CHANNEL_ID);
+        this.raidLeaderName = query.getResults().getString(RaidTable.LEADER);
+
+        String rolesText = query.getResults().getString(RaidTable.ROLES);
+        String[] roleSplit = rolesText.split(";");
+        for (String roleAndAmount : roleSplit) {
+            String[] parts = roleAndAmount.split(":");
+            int amnt = Integer.parseInt(parts[0]);
+            String role = parts[1];
+            roles.add(new RaidRole(amnt, role));
+        }
     }
 
     /**
@@ -80,7 +106,7 @@ public class Raid {
         RaidRole r = getRole(role);
 
         if (r != null) {
-            if(r.isFlexOnly() && !flex) return false;
+            if (r.isFlexOnly() && !flex) return false;
             int max = r.getAmount();
             if (getUserNumberInRole(role) < max) {
                 return true;
@@ -152,8 +178,8 @@ public class Raid {
     /**
      * Add a user to this open world event with the default role
      *
-     * @param id        The id of the user
-     * @param name      The name of the user
+     * @param id   The id of the user
+     * @param name The name of the user
      * @return true if the user was added, false otherwise
      */
     public boolean addUserOpenWorld(Raid raid, String id, String name) {
@@ -161,9 +187,9 @@ public class Raid {
 
         String roleName = roles.get(0).getName();
         if (isValidNotFullRole(roleName)) // there is still space
-            success = UnitOfWork.getDb().getUsersDao().addUser(raid, id, name, "", roleName, true, true);
+            success = UnitOfWork.getUsersDao().addUser(raid, id, name, "", roleName, true, true);
         else
-            success = UnitOfWork.getDb().getUsersFlexRolesDao().addUserFlexRole(raid, id, name, "", roleName, true, true);
+            success = UnitOfWork.getUsersFlexRolesDao().addUserFlexRole(raid, id, name, "", roleName, true, true);
 
         return success;
     }
@@ -270,11 +296,11 @@ public class Raid {
                 text += (roleName + ": \n");
 
                 for (RaidUser user : flexUsersByRole.get(roleName)) {
-                        Emote userEmote = Reactions.getEmoteByName(user.getSpec());
-                        if(userEmote == null)
-                            text += ("- " + user.getName() + " (" + user.getSpec() + ")\n");
-                        else
-                            text += ("<:"+userEmote.getName()+":"+userEmote.getId()+"> " + user.getName() + " (" + user.getSpec() + ")\n");
+                    Emote userEmote = Reactions.getEmoteByName(user.getSpec());
+                    if (userEmote == null)
+                        text += ("- " + user.getName() + " (" + user.getSpec() + ")\n");
+                    else
+                        text += ("<:" + userEmote.getName() + ":" + userEmote.getId() + "> " + user.getName() + " (" + user.getSpec() + ")\n");
                 }
                 text += "\n";
             }
@@ -291,7 +317,7 @@ public class Raid {
     private String buildRolesText() {
         String text = "";
         for (RaidRole role : roles) {
-            if(role.isFlexOnly()) continue;
+            if (role.isFlexOnly()) continue;
             List<RaidUser> raidUsersInRole = getUsersInRole(role.getName());
             text += ("**" + role.getName() + " ( " + raidUsersInRole.size() + " / " + role.getAmount() + " ):** \n");
             for (RaidUser user : raidUsersInRole) {
@@ -299,10 +325,10 @@ public class Raid {
                     text += ("- " + user.getName() + "\n");
                 } else {
                     Emote userEmote = Reactions.getEmoteByName(user.getSpec());
-                    if(userEmote == null)
+                    if (userEmote == null)
                         text += "   - " + user.getName() + " (" + user.getSpec() + ")\n";
                     else
-                        text += "   <:"+userEmote.getName()+":"+userEmote.getId()+"> " + user.getName() + " (" + user.getSpec() + ")\n";
+                        text += "   <:" + userEmote.getName() + ":" + userEmote.getId() + "> " + user.getName() + " (" + user.getSpec() + ")\n";
                 }
             }
             text += "\n";
@@ -336,7 +362,7 @@ public class Raid {
         ArrayList<FlexRole> raidRoles = new ArrayList<FlexRole>();
         for (RaidUser user : usersToFlexRoles.keySet()) {
             if (user.getId().equalsIgnoreCase(id)) {
-                for(FlexRole fRole : usersToFlexRoles.get(user)){
+                for (FlexRole fRole : usersToFlexRoles.get(user)) {
                     raidRoles.add(fRole);
                 }
             }
@@ -367,7 +393,7 @@ public class Raid {
             }
         }
 
-        UnitOfWork.getDb().getUsersDao().removeUserFromRaid(raid, idToRemove);
+        UnitOfWork.getUsersDao().removeUserFromRaid(raid, idToRemove);
     }
 
     /**

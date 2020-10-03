@@ -60,7 +60,7 @@ public class ReactionHandler extends ListenerAdapter {
                             }
                         }
                     } else if (emote.getName().equalsIgnoreCase("X_")) {
-                        boolean removedSuccessfully = UnitOfWork.getDb().getUsersDao().removeUserFromRaid(raid, e.getUser().getId());
+                        boolean removedSuccessfully = UnitOfWork.getUsersDao().removeUserFromRaid(raid, e.getUser().getId());
                         if (removedSuccessfully) {
                             e.getUser().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Successfully removed from event.").queue());
                         } else {

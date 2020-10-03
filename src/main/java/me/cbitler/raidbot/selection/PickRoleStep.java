@@ -92,18 +92,18 @@ public class PickRoleStep implements SelectionStep {
             RaidRole role = raid.getRole(roleName);
             if (role.isFlexOnly()) {
                 // there are no spots for the role to be a main role, so it can only be added as flex!
-                UnitOfWork.getDb().getUsersFlexRolesDao().addUserFlexRole(raid, userID, username, spec, roleName, true, true);
+                UnitOfWork.getUsersFlexRolesDao().addUserFlexRole(raid, userID, username, spec, roleName, true, true);
                 user.openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Added to event roster as flex role.").queue());
             } else if (raid.isUserInRaid(userID) == false) {
                 // check if we can add it as main role
                 if (raid.isValidNotFullRole(roleName)) {
-                    UnitOfWork.getDb().getUsersDao().addUser(raid, userID, username, spec, roleName, true, true);
+                    UnitOfWork.getUsersDao().addUser(raid, userID, username, spec, roleName, true, true);
                     user.openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Added to event roster.").queue());
                 } else {
                     // the role is already full
                     // check if we can add as flex role
                     if (raid.getUserNumFlexRoles(userID) < 2) {
-                        UnitOfWork.getDb().getUsersFlexRolesDao().addUserFlexRole(raid, userID, username, spec, roleName, true, true);
+                        UnitOfWork.getUsersFlexRolesDao().addUserFlexRole(raid, userID, username, spec, roleName, true, true);
                         user.openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Added to event roster as flex role since the role you selected is full.").queue());
                     } else {
                         // role is full and user already has 2 flex roles
@@ -116,7 +116,7 @@ public class PickRoleStep implements SelectionStep {
                 // user has a main role already,
                 // i.e., there has to be a flex role slot available
                 // since we checked this in the ReactionHandler
-                UnitOfWork.getDb().getUsersFlexRolesDao().addUserFlexRole(raid, userID, username, spec, roleName, true, true);
+                UnitOfWork.getUsersFlexRolesDao().addUserFlexRole(raid, userID, username, spec, roleName, true, true);
                 user.openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Added to event roster as flex role.").queue());
             }
         } else {

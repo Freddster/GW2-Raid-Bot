@@ -44,7 +44,7 @@ public class DeleteRoleStep implements EditStep {
         if (valid == false)
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Invalid choice. Try again.").queue());
         else {
-            int out = UnitOfWork.getDb().getRaidDao().deleteRole(raid, roleID);
+            int out = UnitOfWork.getRaidDao().deleteRole(raid, roleID);
             if (out == 0) { // success
                 e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Successfully deleted role.").queue());
                 raid.updateMessage();

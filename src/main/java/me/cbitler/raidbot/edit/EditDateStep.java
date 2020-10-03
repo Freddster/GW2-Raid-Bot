@@ -27,7 +27,7 @@ public class EditDateStep implements EditStep {
     public boolean handleDM(PrivateMessageReceivedEvent e) {
         Raid raid = RaidManager.getRaid(messageID);
         raid.setDate(e.getMessage().getRawContent());
-        if (UnitOfWork.getDb().getRaidDao().updateDateDB(raid)) {
+        if (UnitOfWork.getRaidDao().updateDateDB(raid)) {
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Date successfully updated in database.").queue());
         } else {
             e.getAuthor().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage("Date could not be updated in database.").queue());
